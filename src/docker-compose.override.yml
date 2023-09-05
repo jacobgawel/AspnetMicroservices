@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  catalogdb:
+    container_name: catalogdb
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    
+  catalog.api:
+    container_name: catalog.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # the line below injects and overrides the environmental variable "ConnectionString" to
+      # the docker service name to avoid localhost errors in a container environment
+      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+    depends_on:
+      - catalogdb
+    ports:
+      - "8000:80"
