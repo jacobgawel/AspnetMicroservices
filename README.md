@@ -12,6 +12,14 @@
 - While trying to debug the program when working with containers. Especially when launching the program from Visual Studio. It is important to know that the program will use the default ConnectionString that's set in the appsettings.json file. This is because the env variable is not set when launching the program from Visual Studio. To get around this, we use the appsettings.Development.json file and define the `DatabaseSettings:ConnectionString` pointing to the container service connection in that file. This file is used when launching the program from Visual Studio in the Development environment.
 
 ## Breakdown of all the RESTful APIs
+
+#### Service ports and endpoints
+| Service | Port | Endpoint |
+|:--------|:-------------|:----------|
+|Catalog API|8000|/swagger/index.html|
+|Basket API|8001|/swagger/index.html|
+|Portainer|8080|/|
+
 ### Catalog API (Products)
 
 | Method | Request URI | Use case |
@@ -38,7 +46,7 @@
 Only database operations are performed in this layer. This layer is responsible for the CRUD operations. This layer is also responsible for the connection to the database. This layer is defined in the `Data/` folder and is called `CatalogContext.cs`. This layer is injected into the Business Logic Layer.
 
 #### **Business Logic Layer**
-This layer is responsible for the business logic of the application. For instance, if we want to add a new product, we would do so in this layer. Using this layer. This layer is defined in the `Repositories/` folder and is called `ProductRepository.cs`. This layer is injected into the Presentation Layer or API Controller Endpoints.
+This layer is responsible for the business logic of the application. For instance, if we want to add a new product, we would do so in this layer. Using this layer. This layer is defined in the `Repositories/` folder and is called `ProductRepository.cs`, another file that exists there is the interface file and is usually called `IProductRepository.cs`. This layer is injected into the Presentation Layer.
 
 ![3 Layer Architecture](./Images/3layer.png)
 
@@ -61,3 +69,19 @@ The benefit of this is that if we ever want to change the logic of how we intera
 |POST|api/v1/Basket|Update Basket and Items (add-remove item on basket)|
 |DELETE|api/v1/Basket|Delete basket|
 |POST|api/v1/Basket/Checkout|Checkout basket|
+
+#### Basket API Nuget Packages
+| Package | Version | Use case |
+|:--------|:-------------|:----------|
+|Swashbuckle.AspNetCore|6.5.0|Swagger UI|
+|Microsoft.Extensions.Caching.Distributed.IDistributedCache|7.0.10|Redis Cache|
+|Newtonsoft.Json|13.0.3|JSON Serializer|
+
+#### **Here is a breakdown of the folder structure of the Basket API**
+
+*Entities/* - Contains the Basket entities (description of the basket)
+
+*Repositories/* - Contains the Basket repository (CRUD operations) this is where the context is injected. This provides an abstraction layer between the controller and the database.
+
+*Controller/* - Contains the Basket controller (RESTful API endpoints)
+

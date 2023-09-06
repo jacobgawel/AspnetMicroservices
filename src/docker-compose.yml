@@ -1,6 +1,8 @@
 version: '3.4'
 
 services:
+  portainer:
+    image: portainer/portainer-ce
 
   basketdb:
     image: redis
@@ -22,4 +24,5 @@ services:
 
 volumes:
   mongo_data:
+  portainer_data:
 
