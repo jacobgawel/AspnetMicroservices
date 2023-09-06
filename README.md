@@ -24,8 +24,10 @@
 |:--------|:-------------|:----------|
 |Catalog API|8000|[ [Local Link](http://localhost:5000/swagger) ] [ [Docker Link](http://localhost:8000/swagger) ]|
 |Basket API|8001|[ [Local Link](http://localhost:5001/swagger) ] [ [Docker Link](http://localhost:8001/swagger) ]|
-|Portainer|8080, 9000|[ [Local Link](http://localhost:9000/) ]|
+|Portainer|8080, 9000|[ [Docker Link](http://localhost:9000/) ]|
 |Discount API|8002|[ [Local Link](http://localhost:5002/swagger) ] [ [Docker Link](http://localhost:8002/swagger) ]|
+|Discount gRPC Service|8003|[ [Local Link](http://localhost:5003/swagger) ] [ [Docker Link](http://localhost:8003/swagger) ]|
+|pgAdmin|8081|[ [Docker Link](http://localhost:8081/) ]|
 
 ### Catalog API (Products)
 
@@ -212,3 +214,34 @@ command.ExecuteNonQuery();
 ```
 
 The @ symbol is used to create a string literal. This is because we want to create a string that spans multiple lines. We then execute the query.
+
+### Discount.gRPC Service (Google Remote Procedure Call)
+
+#### The Discount Coupons will be held in a postgreSQL database
+
+### Discount.Grpc Nuget Packages
+
+| Package | Version | Use case |
+|:--------|:-------------|:----------|
+|Npgsql|7.0.4|PostgreSQL Driver|
+|Dapper|2.0.151|Micro ORM|
+|Grpc.AspNetCore|2.57.0|gRPC Service|
+|AutoMapper.Extensions.Microsoft.DependencyInjection|12.0.1|AutoMapper|
+
+#### **Here is a breakdown of the folder structure of the Discount.gRPC Service**
+
+*Entities/* - Contains the Discount entities (description of the discount)
+
+*Repositories/* - Contains the Discount repository (CRUD operations) this is where the context is injected. This provides an abstraction layer between the controller and the database.
+
+*Services/* - Contains the Discount service (gRPC Service)
+
+*Extensions/* - Contains the Discount service extension (gRPC Service)
+
+*Protos/* - Contains the Discount service proto file (gRPC Service)
+
+*Mapper/* - Contains the Discount service mapper (gRPC Service)
+
+Grpc is interesting because it uses a proto file to define the service. This is a file that defines the service and the messages that are sent and received. This is a file that is used to generate the service and the messages.
+
+You then simply override the service and implement the methods that are defined in the proto file. You then use the service to communicate with the database.

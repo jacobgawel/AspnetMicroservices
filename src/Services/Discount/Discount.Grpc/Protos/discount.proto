@@ -1,0 +1,42 @@
+// what syntax we are using e.g. we are using protobuff 3
+syntax = "proto3";
+
+// generates csharp classes in this namespace
+option csharp_namespace = "Discount.Grpc.Protos";
+
+// we are defining the ProtoService here
+service DiscountProtoService {
+	// defining the ProtoService types functions over here
+	rpc GetDiscount (GetDiscountRequest) returns (CouponModel);
+	rpc CreateDiscount (CreateDiscountRequest) returns (CouponModel);
+	rpc UpdateDiscount (UpdateDiscountRequest) returns (CouponModel);
+	rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+// we are then defining the types here
+message GetDiscountRequest {
+	string productName = 1;
+}
+
+message CouponModel {
+	int32 id = 1;
+	string productName = 2;
+	string description = 3;
+	int32 amount = 4;
+}
+
+message CreateDiscountRequest {
+	CouponModel coupon = 1;
+}
+
+message UpdateDiscountRequest {
+	CouponModel coupon = 1;
+}
+
+message DeleteDiscountRequest {
+	string productName = 1;
+}
+
+message DeleteDiscountResponse {
+	bool success = 1;
+}
