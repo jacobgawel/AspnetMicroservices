@@ -86,3 +86,25 @@ The benefit of this is that if we ever want to change the logic of how we intera
 
 *Controller/* - Contains the Basket controller (RESTful API endpoints)
 
+### Discount API (Discounts)
+
+#### The Discount Coupons will be held in a postgreSQL database
+
+##### Schemastics of the database (queries to create the tables)
+```sql
+
+CREATE TABLE Coupon(
+    Id SERIAL PRIMARY KEY NOT NULL,
+    ProductName VARCHAR(24) NOT NULL,
+    Description TEXT,
+    Amount INT
+);
+
+INSERT INTO Coupon(ProductName, Description, Amount) VALUES('IPhone X', 'IPhone Discount', 150);
+
+INSERT INTO Coupon(ProductName, Description, Amount) VALUES('Samsung 10', 'Samsung Discount', 100);
+
+```
+
+
+
