@@ -16,9 +16,10 @@
 #### Service ports and endpoints
 | Service | Port | Endpoint |
 |:--------|:-------------|:----------|
-|Catalog API|8000|/swagger/index.html|
-|Basket API|8001|/swagger/index.html|
-|Portainer|8080|/|
+|Catalog API|8000|[ [Local Link](http://localhost:5000/swagger) ] [ [Docker Link](http://localhost:8000/swagger) ]|
+|Basket API|8001|[ [Local Link](http://localhost:5001/swagger) ] [ [Docker Link](http://localhost:8001/swagger) ]|
+|Portainer|8080, 9000|[ [Local Link](http://localhost:9000/) ]|
+|Discount API|8002|[ [Local Link](http://localhost:5002/swagger) ] [ [Docker Link](http://localhost:8002/swagger) ]|
 
 ### Catalog API (Products)
 
