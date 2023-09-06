@@ -1,6 +1,13 @@
 version: '3.4'
 
 services:
+  basketdb:
+    container_name: basketdb
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
   catalogdb:
     container_name: catalogdb
     image: mongo
@@ -21,3 +28,16 @@ services:
       - catalogdb
     ports:
       - "8000:80"
+
+  basket.api:
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # this is essentailly the same as above, we are simply adding the redish cache string
+      # to override the env settings
+      - "CacheSettings:ConnectionString=basketdb:6379"
+    depends_on:
+      - basketdb
+    ports:
+      - "8001:80"
+
