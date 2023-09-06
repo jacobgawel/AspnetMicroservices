@@ -96,7 +96,7 @@ The benefit of this is that if we ever want to change the logic of how we intera
 
 #### The Discount Coupons will be held in a postgreSQL database
 
-##### Schemastics of the database (queries to create the tables)
+##### **Schemastics of the database (queries to create the tables)**
 ```sql
 
 CREATE TABLE Coupon(
@@ -119,5 +119,96 @@ INSERT INTO Coupon(ProductName, Description, Amount) VALUES('Samsung 10', 'Samsu
 |Npgsql|7.0.4|PostgreSQL Driver|
 |Dapper|2.0.151|Micro ORM|
 
+The Discount API is a little bit different to the other APIs because we are using Dapper to communicate with the 
+database. This makes it a lot easier to communicate with the database, this is due to the fact that we don't have to
+create a database context. Instead we invoke a connection using Npgsql and then we can use Dapper to query the database.
 
+#### **Here is a breakdown of the folder structure of the Discount API**
 
+*Entities/* - Contains the Discount entities (description of the discount)
+
+*Repositories/* - Contains the Discount repository (CRUD operations) this is where the context is injected. This provides an abstraction layer between the controller and the database.
+
+*Controller/* - Contains the Discount controller (RESTful API endpoints)
+
+There is also a middleware imbedded in the Program class. This middleware is responsible for creating the database tables if they don't exist. If they do exist, they get dropped and recreated. The program then seeds the database with data. 
+
+##### **To add the middleware, we use the following code in the Program.cs file:**
+```csharp
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MigrateDatabase<Program>(); // <--- This is where middleware is added to the pipeline
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+```
+That function calls the HostExtension Class which is defined in the Extensions folder. This class is responsible for creating the database tables and seeding the database with data - `MigrateDatabase<Program>()`
+
+```csharp
+public static IApplicationBuilder MigrateDatabase<TContext>(this IApplicationBuilder host, int? retry = 0)
+{
+}
+```
+
+In the line above we are invoking that function and passing in the Program class as a generic type. This is because we want to use the Program class to get the database connection string. We do this by using the following code:
+
+```csharp
+using (var scope = host.ApplicationServices.CreateScope())
+{
+}
+```
+
+In the line above we are creating a scope for the application services. This is because we want to get the service provider. We do this by using the following code:
+
+```csharp
+var services = scope.ServiceProvider;
+var configuration = services.GetRequiredService<IConfiguration>();
+var logger = services.GetRequiredService<ILogger<TContext>>();
+```
+
+In the line above we are getting the configuration and the logger from the service provider.
+
+In the line below is an example of how we utilise the configuration to get the connection string. We do this by using the following code:
+
+```csharp
+logger.LogInformation("Migrating postgresql database");
+string connectionString = configuration.GetValue<string>("DatabaseSettings:ConnectionString");
+
+ using var connection = new NpgsqlConnection
+                        (connectionString);
+connection.Open();
+```
+In the last line above we are opening a connection to the database using the connection string. We then use that connection to create the database tables and seed the database with data. We do this by using the following code:
+
+```csharp
+using var command = new NpgsqlCommand
+{
+    Connection = connection,
+};
+
+command.CommandText = @"DROP TABLE IF EXISTS Coupon";
+
+command.ExecuteNonQuery();
+```
+
+The using var command is used to create a command to execute on the database. We then use the command to execute the query. In the line above we are dropping the table if it exists. We then execute the query by using the following code:
+
+What is using? - The using statement is a C# nicity for dealing with disposable objects. It allows you to ensure that a given object instance is disposed of correctly, regardless of what happens within the code block. This is done by wrapping the object instantiation in a using statement, and then the object is guaranteed to be disposed of when the code execution leaves the using block.
+
+```csharp
+command.CommandText = @"CREATE TABLE Coupon(Id SERIAL PRIMARY KEY,
+                                            ProductName VARCHAR(24) NOT NULL,
+                                            Description TEXT,
+                                            Amount INT)";
+
+command.ExecuteNonQuery();
+
+command.CommandText = @"INSERT INTO Coupon(ProductName, Description, Amount) VALUES('IPhone X', 'IPhone Discount', 150)";
+
+command.ExecuteNonQuery();
+```
+
+The @ symbol is used to create a string literal. This is because we want to create a string that spans multiple lines. We then execute the query.
