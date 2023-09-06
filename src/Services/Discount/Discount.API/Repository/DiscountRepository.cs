@@ -32,11 +32,13 @@ namespace Discount.API.Repository
 
         public async Task<bool> CreateDiscount(Coupon coupon)
         {
-            var result = await _connection.ExecuteAsync
-                ("INSERT INTO Coupon (ProductName, Description, Amount) VALUES" +
-                "(@ProductName, @Description, @Amount)", new { ProductName = coupon.ProductName, Description = coupon.Description, Amount = coupon.Amount });
+            var affected =
+                await _connection.ExecuteAsync
+                    ("INSERT INTO Coupon (ProductName, Description, Amount) VALUES (@ProductName, @Description, @Amount)",
+                            new { ProductName = coupon.ProductName, Description = coupon.Description, Amount = coupon.Amount });
 
-            if (result == 0) { return false; }
+            if (affected == 0)
+                return false;
 
             return true;
         }
@@ -58,7 +60,7 @@ namespace Discount.API.Repository
         public async Task<bool> DeleteDiscount(string productName)
         {
             var result = await _connection.ExecuteAsync
-                ("DELETE Coupon WHERE ProductName = @ProductName", new { ProductName = productName });
+                ("DELETE FROM Coupon WHERE ProductName = @ProductName", new { ProductName = productName });
 
             if(result == 0)
             {
