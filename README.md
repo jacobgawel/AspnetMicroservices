@@ -13,6 +13,12 @@
 
 ## Breakdown of all the RESTful APIs
 
+##### All APIs follow the CRUD operations:
+- Create
+- Read
+- Update
+- Delete
+
 #### Service ports and endpoints
 | Service | Port | Endpoint |
 |:--------|:-------------|:----------|
@@ -105,6 +111,13 @@ INSERT INTO Coupon(ProductName, Description, Amount) VALUES('IPhone X', 'IPhone 
 INSERT INTO Coupon(ProductName, Description, Amount) VALUES('Samsung 10', 'Samsung Discount', 100);
 
 ```
+
+#### Discount API Nuget Packages
+| Package | Version | Use case |
+|:--------|:-------------|:----------|
+|Swashbuckle.AspNetCore|6.5.0|Swagger UI|
+|Npgsql|7.0.4|PostgreSQL Driver|
+|Dapper|2.0.151|Micro ORM|
 
 
 
