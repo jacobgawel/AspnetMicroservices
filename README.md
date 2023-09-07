@@ -166,26 +166,17 @@ using (var scope = host.ApplicationServices.CreateScope())
 In the line above we are creating a scope for the application services. This is because we want to get the service provider. We do this by using the following code:
 
 ```csharp
-var services = scope.ServiceProvider;
-var configuration = services.GetRequiredService<IConfiguration>();
-var logger = services.GetRequiredService<ILogger<TContext>>();
-```
+var services = scope.ServiceProvider; // <-- Getting the service provider
+var configuration = services.GetRequiredService<IConfiguration>(); // <-- Getting the configuration
+var logger = services.GetRequiredService<ILogger<TContext>>(); // <-- Getting the logger
 
-In the line above we are getting the configuration and the logger from the service provider.
-
-In the line below is an example of how we utilise the configuration to get the connection string. We do this by using the following code:
-
-```csharp
 logger.LogInformation("Migrating postgresql database");
 string connectionString = configuration.GetValue<string>("DatabaseSettings:ConnectionString");
 
  using var connection = new NpgsqlConnection
                         (connectionString);
 connection.Open();
-```
-In the last line above we are opening a connection to the database using the connection string. We then use that connection to create the database tables and seed the database with data. We do this by using the following code:
 
-```csharp
 using var command = new NpgsqlCommand
 {
     Connection = connection,
@@ -217,9 +208,7 @@ The @ symbol is used to create a string literal. This is because we want to crea
 
 ### Discount.gRPC Service (Google Remote Procedure Call)
 
-#### The Discount Coupons will be held in a postgreSQL database
-
-### Discount.Grpc Nuget Packages
+#### Discount.Grpc Nuget Packages
 
 | Package | Version | Use case |
 |:--------|:-------------|:----------|
@@ -245,3 +234,51 @@ The @ symbol is used to create a string literal. This is because we want to crea
 Grpc is interesting because it uses a proto file to define the service. This is a file that defines the service and the messages that are sent and received. This is a file that is used to generate the service and the messages.
 
 You then simply override the service and implement the methods that are defined in the proto file. You then use the service to communicate with the database.
+
+### AutoMapper
+
+AutoMapper is a library that is used to map one object to another. This is useful when we want to map the entities to the DTOs (Data Transfer Object). In this case we are using it to convert Coupon to CouponModel and CouponModel to Coupon.
+
+Its important to know how to configure AutoMapper properly when using it. This is because if we don't configure it properly, it will not work. We configure it in the Program.cs file. This part caused me a lot of issues since majority of examples online are not up to date. I had to do a lot of research to figure out how to configure it properly. 
+
+```csharp
+// Program.cs
+var config = new MapperConfiguration(cfg => // <-- Creating new mapping configuration
+{
+    cfg.AddProfile(new DiscountProfile()); // <-- Adding the DiscountProfile to the configuration
+});
+
+var mapper = config.CreateMapper(); // <-- Creating the mapper
+
+builder.Services.AddSingleton(mapper); // <-- Adding the mapper to the service collection
+```
+
+```csharp
+// Mapper/DiscountProfile.cs
+public class DiscountProfile : Profile // <-- Inheriting from Profile
+{
+    public DiscountProfile() 
+    {
+        CreateMap<CouponModel, Coupon>().ReverseMap(); // <-- Mapping CouponModel to Coupon and vice versa
+    }
+}
+```
+
+### Configuring the gRPC Service
+
+#### Protobuff properties configuration
+
+![3 Layer Architecture](./Images/protobuff-properties.png)
+
+
+In order to configure the gRPC service, we need to add the following code to the Program.cs file:
+
+```csharp
+builder.Services.AddGrpc();
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+```
+
+We also added the Migration middleware to the Program.cs file. This is because we want to create the database tables and seed the database with data. We do this by using the same code that we used in the Discount API.
+
+The Grpc follows similar principles as a RESTful API. The only difference is that we are using a proto file to define the service and the messages that are sent and received. We then use the service to communicate with the database. The service is defined in the Services folder. The proto file automatically builds the service which we then use in the DiscountService class.
+
