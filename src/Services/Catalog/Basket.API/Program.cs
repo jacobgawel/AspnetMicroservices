@@ -18,7 +18,7 @@ builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
 // Adding the Grpc client to the project
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
-    (options => options.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]));
+    (o => o.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSettings:DiscountUrl")));
 
 builder.Services.AddScoped<DiscountGrpcServices>();
 

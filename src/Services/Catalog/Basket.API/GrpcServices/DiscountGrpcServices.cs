@@ -1,4 +1,4 @@
-﻿using Discount.Grpc.Protos;
+﻿﻿using Discount.Grpc.Protos;
 
 namespace Basket.API.GrpcServices
 {
@@ -8,7 +8,7 @@ namespace Basket.API.GrpcServices
 
         public DiscountGrpcServices(DiscountProtoService.DiscountProtoServiceClient discountProtoService)
         {
-            _discountProtoService = discountProtoService;
+            _discountProtoService = discountProtoService ?? throw new ArgumentNullException(nameof(discountProtoService));
         }
 
         public async Task<CouponModel> GetDiscount(string productName)

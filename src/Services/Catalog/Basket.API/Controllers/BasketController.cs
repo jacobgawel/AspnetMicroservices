@@ -12,11 +12,12 @@ namespace Basket.API.Controllers
     {
         // injecting the IBasketRepository (its an interface of the basketRepository)
         private readonly IBasketRepository _basketRepository;
-        private readonly DiscountGrpcServices _discountGrpcServices;
+        private readonly DiscountGrpcServices _discountGrpcService;
 
-        public BasketController(IBasketRepository basketRepository)
+        public BasketController(IBasketRepository basketRepository, DiscountGrpcServices discountGrpcService)
         {
             _basketRepository = basketRepository ?? throw new ArgumentNullException(nameof(basketRepository));
+            _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(_discountGrpcService));
         }
 
         [HttpGet("{userName}", Name = "GetBasket")]
@@ -33,14 +34,24 @@ namespace Basket.API.Controllers
         [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ShoppingCart>> UpdateBasket([FromBody] ShoppingCart basket)
         {
-            // TODO : Communicate with Discount.Grpc and Calculate
-            // latest prices of product into shopping cart
+            // Communicate with Discount.Grpc
+            // and calculate latest prices of product into the shopping cart
             // consume Discount Grpc
-            
+
+            if (basket == null)
+            {
+                return BadRequest(new { Message = "Basket is null" });
+            }
+
             foreach (var item in basket.Items)
             {
-                var coupon = await _discountGrpcServices.GetDiscount(item.ProductName);
-                item.Price -= coupon.Amount;                
+                if (string.IsNullOrWhiteSpace(item.ProductName))
+                {
+                    return BadRequest(new { Message = $"The item {item.ProductId} is missing a name" });
+                }
+
+                var coupon = await _discountGrpcService.GetDiscount(item.ProductName);
+                item.Price -= coupon.Amount;
             }
 
             return Ok(await _basketRepository.UpdateBasket(basket));
