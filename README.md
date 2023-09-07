@@ -282,3 +282,22 @@ We also added the Migration middleware to the Program.cs file. This is because w
 
 The Grpc follows similar principles as a RESTful API. The only difference is that we are using a proto file to define the service and the messages that are sent and received. We then use the service to communicate with the database. The service is defined in the Services folder. The proto file automatically builds the service which we then use in the DiscountService class.
 
+When adding gRPC to another project, it must be added as a connected service. This is done by right clicking on the project and selecting Add > Connected Service. You then select the gRPC service and add it to the project. This will add the proto file to the project. Furthermore, you must add the service as a "client" during the initial setup. 
+
+gRPC must also be added to the Program.cs file. This is done by adding the following code:
+
+```csharp
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
+    (o => o.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSettings:DiscountUrl")));
+
+builder.Services.AddScoped<DiscountGrpcServices>();
+```
+
+It is also good to know that when you are adding the connection string, you must add http:// in front of the connection string. This is because the connection string is a URL. If you don't add http:// in front of the connection string, it will not work.
+
+```json
+"GrpcSettings": {
+    "DiscountUrl":  "http://localhost:5003"
+},
+```
+The same applies to docker compose files.
