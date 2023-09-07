@@ -10,7 +10,7 @@ namespace Discount.Grpc.Mapper
         {
             // You use this to convert the Coupon to the one that was created
             // by visual studio e.g. <Coupon -> Coupon Model>
-            CreateMap<Coupon, CouponModel>().ReverseMap();
+            CreateMap<CouponModel, Coupon>().ReverseMap();
         }
     }
 }
