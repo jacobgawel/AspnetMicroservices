@@ -19,7 +19,7 @@ if (app.Environment.IsDevelopment())
 {
     // adding middleware to the program. e.g. this will method will get executed
     // when the program is launched The <Program> part suggests that it's a generic method where Program is a type parameter.
-    app.MigrateDatabase<Program>();
+    // app.MigrateDatabase<Program>();
     app.UseSwagger();
     app.UseSwaggerUI();
 }

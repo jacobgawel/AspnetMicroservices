@@ -27,6 +27,9 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    // this is the middleware used for the gRPC service. 
+    // at this time the db will be dropped and rebuild twice. This is due to the Discount.API
+    // having the same middleware
     app.MigrateDatabase<Program>();
 }
 
